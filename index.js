@@ -29,10 +29,19 @@ async function run() {
 
         const menuCollection = client.db("restaurantDB").collection('menu');
         const cartCollection = client.db("restaurantDB").collection('cart');
+        const userCollection = client.db("restaurantDB").collection('user');
 
         // get method for menu
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
+            res.send(result)
+        })
+
+        // get method for cart
+        app.get('/cart', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const result = await cartCollection.find(query).toArray();
             res.send(result)
         })
 
@@ -43,11 +52,15 @@ async function run() {
             res.send(result);
         })
 
-        // get method for cart
-        app.get('/cart', async (req, res) => {
-            const email = req.query.email;
-            const query = { email: email };
-            const result = await cartCollection.find(query).toArray();
+        // post method for user
+        app.post('/user', async (req, res) => {
+            const user = req.body;
+            const query = { email: user.email }
+            const existingUser = await userCollection.findOne(query);
+            if (existingUser) {
+                return res.send({ message: 'user already exist', insertedId: null })
+            }
+            const result = await userCollection.insertOne(user);
             res.send(result)
         })
 
