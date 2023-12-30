@@ -53,6 +53,12 @@ async function run() {
             res.send(result)
         })
 
+        // get method for user
+        app.get('/user', async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result)
+        })
+
         // post data to database
         app.post('/cart', async (req, res) => {
             const cartItem = req.body;
@@ -78,6 +84,38 @@ async function run() {
             }
             const result = await userCollection.insertOne(user);
             res.send(result)
+        })
+
+        // // delete method for user
+        app.delete('/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        // patch method for user to make admin
+        app.patch('/user/admin/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
+
+        app.get('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            let admin = false;
+            if (user) {
+                admin = user?.role === 'admin';
+            }
+            res.send({ admin });
         })
 
         // jwt
