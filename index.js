@@ -59,18 +59,27 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            let admin = false;
+            if (user) {
+                admin = user?.role === 'admin';
+            }
+            res.send({ admin });
+        })
+
         // post data to database
         app.post('/cart', async (req, res) => {
             const cartItem = req.body;
             const result = await cartCollection.insertOne(cartItem);
             res.send(result);
         })
-
-        // delete method for cart
-        app.delete('/cart/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await cartCollection.deleteOne(query);
+        // post data to database
+        app.post('/menu', async (req, res) => {
+            const menuItem = req.body;
+            const result = await menuCollection.insertOne(menuItem);
             res.send(result);
         })
 
@@ -84,6 +93,14 @@ async function run() {
             }
             const result = await userCollection.insertOne(user);
             res.send(result)
+        })
+
+        // delete method for cart
+        app.delete('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await cartCollection.deleteOne(query);
+            res.send(result);
         })
 
         // // delete method for user
@@ -107,16 +124,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/user/admin/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
-            const user = await userCollection.findOne(query);
-            let admin = false;
-            if (user) {
-                admin = user?.role === 'admin';
-            }
-            res.send({ admin });
-        })
+        
 
         // jwt
         // app.post('/jwt', async (req, res) => {
