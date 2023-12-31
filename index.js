@@ -93,6 +93,13 @@ async function run() {
             res.send(result);
         })
 
+        // post method for menu
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        })
+
         // post method for user
         app.post('/user', async (req, res) => {
             const user = req.body;
